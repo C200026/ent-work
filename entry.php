@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
             unset($_SESSION['join']);
             /* (2)  画面遷移処理を記述                      */
-            /*  xxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
+            header('Location: entry.php');
             exit();
         } catch (PDOException $e) {
             echo ($e->getMessage());

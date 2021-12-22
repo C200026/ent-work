@@ -1,6 +1,7 @@
 <?php
 require('functions.php');
 session_start();
+$error = array("name" => "", "email" => "", "password" => "", "file" => "");
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!empty($_POST)) {
 		// エラー項目の確認
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$dbh = db_conn();
 		try {
 			/* (1) 実行するSQL文を用意する            */
-			$sql = 'select * from members where email.contains(:email)';
+			$sql = 'select id from members where email = :email';
 			$stmt = $dbh->prepare($sql);
 			$stmt->bindValue(':email', $email, PDO::PARAM_STR);
 			$stmt->execute();
@@ -54,13 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$_SESSION['join'] = $_POST;
 		$_SESSION['join']['image'] = $image;
 		/* (3) 画面遷移の命令を記述        */
-		/* xxxxxxxxxxxxxxxxx */
+		header('Location: entry.php');
 		exit();
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 	if ($_GET['action'] === 'rewrite') {              // 修正（書き直し）
 		$_POST = $_SESSION['join'];
 		$error['rewrite'] = true;
+	} else {
+		$_POST = array("name" => "", "email" => "", "password" => "", "file" => "");
 	}
 }
 ?>
