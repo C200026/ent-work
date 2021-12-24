@@ -1,70 +1,70 @@
 <?php
 require('functions.php');
 session_start();
-// $error = array("name" => "", "email" => "", "password" => "", "file" => "");
+// $error = array("name" => "", "email" => "", "password" => "", "file" => ""); エラー表示消去用
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	if (!empty($_POST)) {
-		// エラー項目の確認
-		if ($_POST['name'] === '') {
-			$error['name'] = 'blank';
-		}
-		if ($_POST['email'] === '') {
-			$error['email'] = 'blank';
-		}
-		if (strlen($_POST['password']) < 4) {
-			$error['password'] = 'length';
-		}
-		if ($_POST['password'] === '') {
-			$error['password'] = 'blank';
-		}
-		$fileName = $_FILES['image']['name'];
-		if (!empty($fileName)) {
-			$ext = substr($fileName, -3);
-			if ($ext != 'jpg' && $ext != 'gif') {
-				$error['image'] = 'type';
-			}
-		}
-	}
-	// 入力エラーがなければ、次に重複アカウントのチェック
-	if (empty($error)) {
-		$email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
-		$name = htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
-		$pasword = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
-		$picture = htmlspecialchars($_POST['picture'], ENT_QUOTES, 'UTF-8');
-		$dbh = db_conn();
-		try {
-			/* (1) 実行するSQL文を用意する            */
-			$sql = 'select count(id) from members where email = :email';
-			$stmt = $dbh->prepare($sql);
-			$stmt->bindValue(':email', $email, PDO::PARAM_STR);
-			$stmt->execute();
-			$record = $stmt->fetch();
-			/* (2) 条件判定を記述            */
-			if ($recoed > 0) {
-				$error['email'] = 'duplicate';   // eメール重複エラー
-			}
-		} catch (PDOException $e) {
-			echo ($e->getMessage());
-			die();
-		}
-	}
-	if (empty($error)) {          // 何もエラーが無ければ画像をアップロードして次の画面に遷移
-		// 画像をアップロードする
-		$image = date('YmdHis') . $_FILES['image']['name'];
-		move_uploaded_file($_FILES['image']['tmp_name'], './member_picture/' . $image);
-		$_SESSION['join'] = $_POST;
-		$_SESSION['join']['image'] = $image;
-		/* (3) 画面遷移の命令を記述        */
-		header('Location: entry.php');
-		exit();
-	}
+    if (!empty($_POST)) {
+        // エラー項目の確認
+        if ($_POST['name'] === '') {
+            $error['name'] = 'blank';
+        }
+        if ($_POST['email'] === '') {
+            $error['email'] = 'blank';
+        }
+        if (strlen($_POST['password']) < 4) {
+            $error['password'] = 'length';
+        }
+        if ($_POST['password'] === '') {
+            $error['password'] = 'blank';
+        }
+        $fileName = $_FILES['image']['name'];
+        if (!empty($fileName)) {
+            $ext = substr($fileName, -3);
+            if ($ext != 'jpg' && $ext != 'gif') {
+                $error['image'] = 'type';
+            }
+        }
+    }
+    // 入力エラーがなければ、次に重複アカウントのチェック
+    if (empty($error)) {
+        $email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
+        $pasword = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
+        $picture = htmlspecialchars($_POST['picture'], ENT_QUOTES, 'UTF-8');
+        $dbh = db_conn();
+        try {
+            /* (1) 実行するSQL文を用意する            */
+            $sql = 'select email from members where email = :email';
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            $record = $stmt->fetch();
+            /* (2) 条件判定を記述            */
+            if (!empty($record)) {
+                $error['email'] = 'duplicate';   // eメール重複エラー
+            }
+        } catch (PDOException $e) {
+            echo ($e->getMessage());
+            die();
+        }
+    }
+    if (empty($error)) {          // 何もエラーが無ければ画像をアップロードして次の画面に遷移
+        // 画像をアップロードする
+        $image = date('YmdHis') . $_FILES['image']['name'];
+        move_uploaded_file($_FILES['image']['tmp_name'], './member_picture/' . $image);
+        $_SESSION['join'] = $_POST;
+        $_SESSION['join']['image'] = $image;
+        /* (3) 画面遷移の命令を記述        */
+        header('Location: entry.php');
+        exit();
+    }
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-	if ($_GET['action'] === 'rewrite') {              // 修正（書き直し）
-		$_POST = $_SESSION['join'];
-		$error['rewrite'] = true;
-		// } else {
-		// 	$_POST = array("name" => "", "email" => "", "password" => "", "file" => "");
-	}
+    if ($_GET['action'] === 'rewrite') {              // 修正（書き直し）
+        $_POST = $_SESSION['join'];
+        $error['rewrite'] = true;
+        // } else {   //エラー表示消去用
+        // 	$_POST = array("name" => "", "email" => "", "password" => "", "file" => ""); //エラー表示消去用
+    }
 }
 ?>
 <!DOCTYPE html>
