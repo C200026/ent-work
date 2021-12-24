@@ -1,7 +1,7 @@
 <?php
 require('functions.php');
 session_start();
-$error = array("name" => "", "email" => "", "password" => "", "file" => "");
+// $error = array("name" => "", "email" => "", "password" => "", "file" => "");
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!empty($_POST)) {
 		// エラー項目の確認
@@ -34,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$dbh = db_conn();
 		try {
 			/* (1) 実行するSQL文を用意する            */
-			$sql = 'select id from members where email = :email';
+			$sql = 'select count(id) from members where email = :email';
 			$stmt = $dbh->prepare($sql);
 			$stmt->bindValue(':email', $email, PDO::PARAM_STR);
 			$stmt->execute();
 			$record = $stmt->fetch();
 			/* (2) 条件判定を記述            */
-			if (!empty($recoed)) {
+			if ($recoed != 0) {
 				$error['email'] = 'duplicate';   // eメール重複エラー
 			}
 		} catch (PDOException $e) {
@@ -62,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($_GET['action'] === 'rewrite') {              // 修正（書き直し）
 		$_POST = $_SESSION['join'];
 		$error['rewrite'] = true;
-	} else {
-		$_POST = array("name" => "", "email" => "", "password" => "", "file" => "");
+		// } else {
+		// 	$_POST = array("name" => "", "email" => "", "password" => "", "file" => "");
 	}
 }
 ?>

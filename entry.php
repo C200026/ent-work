@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindValue(':picture', $picture, PDO::PARAM_STR);
             $stmt->execute();
             unset($_SESSION['join']);
-            /* (2)  画面遷移処理を記述                      */
-            header('Location: entry.php');
+            /* (2)  画面遷移処理を記述                   */
+            header('Location: thanks.php');
             exit();
         } catch (PDOException $e) {
             echo ($e->getMessage());
@@ -75,11 +75,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <img src="./member_picture/<?php echo $picture; ?>" width="100" height="100" alt="" />
                     </dd>
                 </dl>
-                /* (3) リンク表示処理を記述 */
-                /* <div><a href=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 修正する</a>
-                        <div><a href="input.php?action=rewrite">&laquo;&nbsp;修正する</a>　|　
-                            <input type="submit" value="登録する" />
-                        </div>
+                <!-- /* (3) リンク表示処理を記述  <div><a href=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 修正する</a> -->
+                <div><a href="input.php?action=rewrite">&laquo;&nbsp;修正する</a>
+                    <input type="submit" value="登録する" />
+                </div>
             </form>
         </div>
     </div>
