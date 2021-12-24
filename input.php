@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$stmt->execute();
 			$record = $stmt->fetch();
 			/* (2) 条件判定を記述            */
-			if ($recoed != 0) {
+			if ($recoed > 0) {
 				$error['email'] = 'duplicate';   // eメール重複エラー
 			}
 		} catch (PDOException $e) {
